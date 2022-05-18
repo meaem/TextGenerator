@@ -1,3 +1,5 @@
+import random
+
 from nltk.tokenize import word_tokenize
 
 
@@ -31,33 +33,54 @@ def get_markov_dict(tokens):
     return result
 
 
+def generate_random_sentence(markov_dict,length):
+    words = []
+    word = random.choice(list(markov_dict.keys()))
+    words.append(word)
+    # print(word)
+    # print(markov_dict[word].keys())
+    for _ in range(length-1):
+        # print("----")
+        next_list = list(markov_dict[word].keys())
+        next_counts = list(markov_dict[word].values())
+        word = random.choices(next_list,next_counts)[0]
+        words.append(word)
+        # print(word)
+        # print(markov_dict[word].keys())
+    # word = random.choice(list(markov_dict[word].keys()))
+    # words.append(word)
+    return words
+
+
 def main():
     corpus_file_name = input()
     tokens = load_corpus(corpus_file_name)
     bigrams = get_bigrams(tokens)
     # print(f"Number of bigrams: {len(bigrams)}")
     markov_dict = get_markov_dict(bigrams)
-    while True:
-        # print("**")
-        user_input = input()
-
-        if user_input == "exit":
-            break
-        try:
-            head = user_input
-            # print(f"**{head}**")
-            selected = markov_dict[head]
-            print(f"Head: {head}")
-            for k in selected:
-                print(f"Tail: {k}     Count: {selected[k]}")
-        except TypeError:
-            print("Type Error. Please input an integer.")
-        except ValueError:
-            print("Value Error. Please input an integer.")
-        except IndexError:
-            print("IndexError: list index out of range")
-        except KeyError:
-            print("Key Error. The requested word is not in the model. Please input another word.")
+    for _ in range(10):
+        sent = generate_random_sentence(markov_dict,10)
+        print(" ".join(sent))
+        # # print("**")
+        # user_input = input()
+        #
+        # if user_input == "exit":
+        #     break
+        # try:
+        #     head = user_input
+        #     # print(f"**{head}**")
+        #     selected = markov_dict[head]
+        #     print(f"Head: {head}")
+        #     for k in selected:
+        #         print(f"Tail: {k}     Count: {selected[k]}")
+        # except TypeError:
+        #     print("Type Error. Please input an integer.")
+        # except ValueError:
+        #     print("Value Error. Please input an integer.")
+        # except IndexError:
+        #     print("IndexError: list index out of range")
+        # except KeyError:
+        #     print("Key Error. The requested word is not in the model. Please input another word.")
 
 
 main()
