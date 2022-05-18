@@ -26,25 +26,42 @@ def get_markov_dict(tokens):
     """
     result = {}
     for head, tail in tokens:
-        t = result.setdefault(head, {tail: 0})#
+        t = result.setdefault(head, {tail: 0})  #
         t.setdefault(tail, 0)
         t[tail] += 1
 
     return result
 
 
-def generate_random_sentence(markov_dict,length):
+def generate_random_sentence(markov_dict, max_length):
     words = []
-    word = random.choice(list(markov_dict.keys()))
-    words.append(word)
+    # first_word = ""
+    while True:
+        first_word = random.choice(list(markov_dict.keys()))
+        if first_word[0].isupper() and first_word[-1] not in ['.', '!', '?']:
+            break
+
+    words.append(first_word)
     # print(word)
     # print(markov_dict[word].keys())
-    for _ in range(length-1):
+    word = first_word
+    for _ in range(max_length - 1):
         # print("----")
         next_list = list(markov_dict[word].keys())
         next_counts = list(markov_dict[word].values())
-        word = random.choices(next_list,next_counts)[0]
+
+        word = random.choices(next_list, next_counts)[0]
         words.append(word)
+        # print("1**",words)
+
+    while word[-1] not in ['.', '!', '?']:
+        next_list = list(markov_dict[word].keys())
+        next_counts = list(markov_dict[word].values())
+
+        word = random.choices(next_list, next_counts)[0]
+        words.append(word)
+        # print("2**",words)
+
         # print(word)
         # print(markov_dict[word].keys())
     # word = random.choice(list(markov_dict[word].keys()))
@@ -59,7 +76,7 @@ def main():
     # print(f"Number of bigrams: {len(bigrams)}")
     markov_dict = get_markov_dict(bigrams)
     for _ in range(10):
-        sent = generate_random_sentence(markov_dict,10)
+        sent = generate_random_sentence(markov_dict, 5)
         print(" ".join(sent))
         # # print("**")
         # user_input = input()
